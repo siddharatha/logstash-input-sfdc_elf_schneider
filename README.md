@@ -2,6 +2,18 @@
 
 we only support 'ApexExecution','ApexSoap','ApexTrigger','API','BulkApi','Dashboard','LightningError','LightningInteraction','LightningPageView','LightningPerformance','LoginAs','Login','Logout','MetadataApiOperation','Report','RestApi','URI','VisualforceRequest','WaveChange','WaveInteraction','WavePerformance' log types.
 
+# How to publish a new version
+- Make your code changes in sfdc_elf.rb, ensure any new configuration has default values
+- update the gemspec file with the right version and repo
+- bundle it
+  ```sh
+  gem build logstash-input-sfdc_elf_schneider.gemspec
+  ```
+- publish it
+  ```sh
+    gem push logstash-input-sfdc_elf_schneider-1.(yourversion).gem
+  ```
+
 # Logstash Plugin for Salesforce's Event Log File
 
 The Salesforce Event Log File [Ruby Gem](https://rubygems.org/gems/logstash-input-sfdc_elf/) plug-in simplifies the integration between
