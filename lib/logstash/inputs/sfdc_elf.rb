@@ -30,6 +30,9 @@ class LogStash::Inputs::SfdcElf < LogStash::Inputs::Base
   # The host to use for OAuth2 authentication.
   config :host, validate: :string, default: 'login.salesforce.com'
 
+
+  config :eventtypesstring, validate: :string, default: "'ApexExecution','ApexSoap','API','BulkApi','Dashboard','LightningError','LightningInteraction','LightningPageView','LightningPerformance','LoginAs','Login','Logout','MetadataApiOperation','Report','RestApi','URI','VisualforceRequest','WaveChange','WaveInteraction','WavePerformance'"
+
   # Only needed when your Force.com organization requires it.
   # Security token to you Force.com organization, can be found in  My Settings > Personal > Reset My Security Token.
   # Then it will take you to "Reset My Security Token" page, and click on the "Reset Security Token" button. The token
@@ -53,7 +56,7 @@ class LogStash::Inputs::SfdcElf < LogStash::Inputs::Base
     @client.client_id     = @client_id.value
     @client.client_secret = @client_secret.value
     @client.host          = @host
-    @client.version       = '33.0'
+    @client.version       = '46.0'
 
     # Authenticate the client
     @logger.info("#{LOG_KEY}: tyring to authenticate client")
@@ -98,11 +101,11 @@ class LogStash::Inputs::SfdcElf < LogStash::Inputs::Base
       @logger.info('---------------------------------------------------')
 
       # Grab a list of SObjects, specifically EventLogFiles.
-      soql_expr = "SELECT Id, EventType, Logfile, LogDate, LogFileLength, LogFileFieldTypes
-                   FROM EventLogFile
-                   WHERE LogDate > #{@last_indexed_log_date} and EventType in ('ApexExecution','ApexSoap','ApexTrigger','API','BulkApi','Dashboard','LightningError','LightningInteraction','LightningPageView','LightningPerformance','LoginAs','Login','Logout','MetadataApiOperation','Report','RestApi','URI','VisualforceRequest','WaveChange','WaveInteraction','WavePerformance') ORDER BY LogDate ASC "
+      
+      soql_expr= "SELECT Id, EventType, Logfile, LogDate, LogFileLength, LogFileFieldTypes
+      FROM EventLogFile
+      WHERE LogDate > #{@last_indexed_log_date} and EventType in (#{@eventtypesstring}) and Sequence>0 and Interval='Hourly'  ORDER BY LogDate ASC"   
 
-      @logger.info("#{LOG_KEY}: query = #{soql_expr}");
       query_result_list = @client.retryable_query(username: @username,
                                                   password: @password.value + @security_token.value,
                                                   retry_attempts: RETRY_ATTEMPTS,
