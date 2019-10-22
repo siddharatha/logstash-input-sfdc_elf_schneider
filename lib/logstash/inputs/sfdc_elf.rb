@@ -104,7 +104,7 @@ class LogStash::Inputs::SfdcElf < LogStash::Inputs::Base
       
       soql_expr= "SELECT Id, EventType, Logfile, LogDate, LogFileLength, LogFileFieldTypes
       FROM EventLogFile
-      WHERE LogDate > #{@last_indexed_log_date} and EventType in (#{@eventtypesstring}) and Sequence>0 and Interval='Hourly'  ORDER BY LogDate ASC"   
+      WHERE LogDate > #{@last_indexed_log_date} and EventType in (#{@eventtypesstring}) and Interval='Daily'  ORDER BY LogDate ASC"   
 
       query_result_list = @client.retryable_query(username: @username,
                                                   password: @password.value + @security_token.value,
